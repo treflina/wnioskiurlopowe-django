@@ -20,7 +20,7 @@ class Request(TimeStampedModel):
     
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, related_name='request_user', default=''
+        on_delete=models.DO_NOTHING, related_name='request_user', null=True
     )
     
     type = models.CharField('Rodzaj',  max_length=30, choices=TYPE_CHOICES, default='')
@@ -30,7 +30,7 @@ class Request(TimeStampedModel):
     days = models.PositiveIntegerField('Ilość dni urlopu', null=True, blank=True)
     status = models.CharField(max_length=20, default ="oczekujący")
     substitute = models.CharField(max_length=50, blank=True)
-    send_to_person = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_manager', default="")
+    send_to_person = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user_manager', null=True)
     signed_by = models.CharField(max_length=50, blank=True)
 
     objects = RequestManager()

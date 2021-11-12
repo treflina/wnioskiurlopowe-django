@@ -14,7 +14,7 @@ class Sickleave(models.Model):
     )
     
     employee = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='osoba', related_name='sickemployee', default=""
+        settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, verbose_name='osoba', related_name='sickemployee', default=""
     )
     type = models.CharField('Rodzaj',  max_length=10, choices=TYPE_CHOICES, default='C')
     issue_date = models.DateField('Data wystawienia', null=True, blank=True)

@@ -28,7 +28,7 @@ class User(AbstractBaseUser):
     position_addinfo = models.CharField('Dopisek "sprz." w przypadku dwóch umów', max_length=50, blank =True)
     workplace = models.CharField('Dział/Filia', max_length=50, blank = True)
     role = models.CharField('Stanowisko kierownicze', null =True, max_length=10, choices=ROLE_CHOICES)
-    manager = models.ForeignKey('self', null=True, blank=True, related_name='user', on_delete=models.CASCADE)
+    manager = models.ForeignKey('self', null=True, blank=True, related_name='user', on_delete=models.DO_NOTHING)
     working_hours = models.DecimalField('Wymiar etatu', max_digits=3, decimal_places=2, default=1)
     annual_leave = models.IntegerField('Roczny wymiar urlopu', default=26)
     current_leave = models.IntegerField('Urlop (pozostało)', default=0)
