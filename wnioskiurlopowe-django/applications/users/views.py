@@ -6,8 +6,8 @@ from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django import forms
 
 from django.views.generic import (
     View,
@@ -51,6 +51,7 @@ class UserRegisterView(TopManagerPermisoMixin, FormView):
             first_name = form.cleaned_data['first_name'],
             last_name = form.cleaned_data['last_name'],
             position = form.cleaned_data['position'],
+            role = form.cleaned_data['role'],
             email = form.cleaned_data['email'],
             work_email = form.cleaned_data['work_email'],
             position_addinfo = form.cleaned_data['position_addinfo'],
@@ -119,7 +120,6 @@ class UpdatePasswordView(FormView):
             user_to_update.is_active = True
 
         logout(self.request)
-        messages.success(self.request, 'Twoje hasło zostało zmienione. Teraz możesz się zalogować')
         return super(UpdatePasswordView, self).form_valid(form)
 
 class AllEmployeesList(TopManagerPermisoMixin, ListView):
@@ -132,7 +132,7 @@ class AllEmployeesList(TopManagerPermisoMixin, ListView):
     def get_context_data(self, **kwargs):
 
         context = super(AllEmployeesList, self).get_context_data(**kwargs)
-        all_employees = User.objects.all()
+        all_employees = User.objects.filter(is_active=True)
         today = date.today()
 
         for employee in all_employees:
@@ -166,7 +166,7 @@ class AdminEmployeesList(TopManagerPermisoMixin, ListView):
     def get_context_data(self, **kwargs):
 
         context = super(AdminEmployeesList, self).get_context_data(**kwargs)
-        employees = User.objects.all()
+        employees = User.objects.order_by('-is_active','last_name','first_name').all()
 
         for employee in employees:
             if employee.working_hours == 1.00:
@@ -188,7 +188,7 @@ class EmpleadoUpdateView(TopManagerPermisoMixin, UpdateView):
     login_url = reverse_lazy('users_app:user-login')
     
     fields = ['username','email', 'work_email','first_name','last_name','position','position_addinfo',
-            'workplace','role','manager','working_hours','annual_leave','current_leave','contract_end',
+            'workplace','role','manager','working_hours','annual_leave','current_leave','contract_end', 'is_active', 'is_superuser',
             'additional_info',]
 
     success_url = reverse_lazy('users_app:admin-all-employees')

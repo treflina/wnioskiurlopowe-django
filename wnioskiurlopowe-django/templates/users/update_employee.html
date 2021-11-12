@@ -66,10 +66,17 @@
                 {{ form.current_leave|as_crispy_field }}
             </div>
         </div>
-
         <div class="row">
             <div class="col">
                 {{form.additional_info|as_crispy_field}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                {{ form.is_active|as_crispy_field }}
+            </div>
+            <div class="col-lg-6">
+                {{ form.is_superuser|as_crispy_field }}
             </div>
         </div>
 

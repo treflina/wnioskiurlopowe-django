@@ -33,9 +33,9 @@ class User(AbstractBaseUser):
     annual_leave = models.IntegerField('Roczny wymiar urlopu', default=26)
     current_leave = models.IntegerField('Urlop (pozostało)', default=0)
     contract_end = models.DateField('Umowa do:', null=True, blank=True)
-    is_staff = models.BooleanField('Admin', default=False)
-    is_active = models.BooleanField('Aktywny', default=True)
-    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField('is_staff', default=False)
+    is_active = models.BooleanField('Obecnie zatrudniony', default=True)
+    is_superuser = models.BooleanField('Uprawnienia administratora', default=False)
     additional_info = models.CharField('Dodatkowe informacje', blank=True, max_length=100)
   
 
