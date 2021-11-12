@@ -1,0 +1,1 @@
+from wnioski.settings.base import *

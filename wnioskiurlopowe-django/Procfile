@@ -1,0 +1,1 @@
+web: gunicorn wnioski.wsgi --log-file -
