@@ -103,6 +103,7 @@ class LoginForm(forms.Form):
 
         return cleaned_data
 
+
 class UpdatePasswordForm(forms.Form):
     
     password1 = forms.CharField(
@@ -123,4 +124,16 @@ class UpdatePasswordForm(forms.Form):
             }
         )
     )
+
+    password3 = forms.CharField(
+        label = 'Powtórz nowe hasło',
+        required = True,
+        widget = forms.PasswordInput(
+            attrs ={
+                'placeholder': 'Powtórz nowe hasło',
+            }
+        )
+    )
+
+
   

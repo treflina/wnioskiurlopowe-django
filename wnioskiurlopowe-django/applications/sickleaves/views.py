@@ -3,6 +3,7 @@ from django.urls import path, reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView
 from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.core.mail import send_mail
@@ -23,14 +24,14 @@ class SickleavesListView(TopManagerPermisoMixin, ListView):
     def get_queryset(self):
         return Sickleave.objects.all().order_by('-issue_date')
 
+
 class SickleaveCreateView(TopManagerPermisoMixin, CreateView):
+
     template_name = "sickleaves/add_sickleave.html"
     model = Sickleave
     form_class = SickleaveForm 
     success_url = reverse_lazy('sickleaves_app:sickleaves')
     login_url = reverse_lazy('users_app:user-login')
-
-
 
     def form_valid(self, form):
         employee = form.cleaned_data["employee"]
@@ -57,13 +58,17 @@ class SickleaveCreateView(TopManagerPermisoMixin, CreateView):
 
         return super(SickleaveCreateView, self).form_valid(form)
 
+
 class SickleaveUpdateView(TopManagerPermisoMixin, UpdateView):
+
     model = Sickleave
     template_name = "sickleaves/update_sickleave.html"
     fields = "__all__"
     success_url = reverse_lazy('sickleaves_app:sickleaves')
     login_url = reverse_lazy('users_app:user-login')
 
+
+@login_required(login_url='users_app:user-login')
 def delete_sickleave(request,pk):
     sickleave_to_delete = Sickleave.objects.get(id=pk).delete()
     return HttpResponseRedirect(reverse('sickleaves_app:sickleaves'))

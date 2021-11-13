@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from applications.users.mixins import TopManagerPermisoMixin
 from django.views.generic import FormView, ListView
 
@@ -89,6 +90,7 @@ class UserRequestsListView(LoginRequiredMixin, ListView):
         context['user_requests_others'] = Request.objects.user_requests_others(user)
         return context
 
+
 class RequestsListView(TopManagerPermisoMixin, ListView):
 
     template_name = "requests/allrequests.html"
@@ -112,8 +114,9 @@ class RequestsListView(TopManagerPermisoMixin, ListView):
 
         return context
 
+
+@login_required(login_url='users_app:user-login')
 def accept_request(request,pk):
-      
         user = request.user
         request_to_accept = Request.objects.get(id=pk)
         request_to_accept.status = 'zaakceptowany'
@@ -121,8 +124,9 @@ def accept_request(request,pk):
         request_to_accept.save(update_fields=['status', 'signed_by'])
         return HttpResponseRedirect(reverse('requests_app:allrequests'))
 
+
+@login_required(login_url='users_app:user-login')
 def reject_request(request,pk):
-      
         user = request.user
         request_to_reject = Request.objects.get(id=pk)
         if request_to_reject.type == 'W':
@@ -135,8 +139,9 @@ def reject_request(request,pk):
     
         return HttpResponseRedirect(reverse('requests_app:allrequests'))
 
-def delete_request(request,pk):
 
+@login_required(login_url='users_app:user-login')
+def delete_request(request,pk):
         user = request.user
         request_to_delete = Request.objects.get(id=pk)
         if request_to_delete.type == 'W':

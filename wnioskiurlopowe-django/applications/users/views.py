@@ -6,6 +6,8 @@ from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django import forms
 
@@ -36,7 +38,6 @@ from applications.sickleaves.models import Sickleave
 
 
 class UserRegisterView(TopManagerPermisoMixin, FormView):
-
 
     template_name = 'users/register.html'
     form_class = UserRegisterForm
@@ -70,7 +71,6 @@ class UserRegisterView(TopManagerPermisoMixin, FormView):
 
 class LoginUser(FormView):
 
-
     template_name = 'users/login.html'
     form_class = LoginForm
     success_url = reverse_lazy('home_app:index')
@@ -87,7 +87,6 @@ class LoginUser(FormView):
 
 class LogoutView(View):
 
-
     def get(self, request, *args, **kargs):
         logout(request)
         return HttpResponseRedirect(
@@ -96,31 +95,28 @@ class LogoutView(View):
             )
         )
 
+@login_required(login_url='users_app:user-login')
+def update_password(request):
+    form = UpdatePasswordForm()
+    if request.method == 'POST':
+        form = UpdatePasswordForm(request.POST)
+        new_password = request.POST['password2']
+        if request.POST['password3'] != new_password:
+            messages.error(request, 'Niepoprawnie powtórzono nowe hasło.')
+            print("not changed ====")
+        else:
+            user=request.user
+            user.set_password(new_password)
+            user.save()
+            print("==========changed")
+            logout(request)
+            return HttpResponseRedirect(
+                reverse(
+                    'users_app:user-login'
+                )
+            )
+    return render(request, 'users/update_password.html', {'form':form})
 
-class UpdatePasswordView(FormView):
-
-
-    template_name = 'users/update.html'
-    form_class = UpdatePasswordForm
-    success_url = reverse_lazy('users_app:user-login')
-    login_url = reverse_lazy('users_app:user-login')
-
-    def form_valid(self, form):
-
-        user_to_update = self.request.user
-        user = authenticate(
-            username=user_to_update.username,
-            password=form.cleaned_data['password1']
-        )
-
-        if user:
-            new_password = form.cleaned_data['password2']
-            user_to_update.set_password(new_password)
-            user_to_update.save()
-            user_to_update.is_active = True
-
-        logout(self.request)
-        return super(UpdatePasswordView, self).form_valid(form)
 
 class AllEmployeesList(TopManagerPermisoMixin, ListView):
 
@@ -155,8 +151,8 @@ class AllEmployeesList(TopManagerPermisoMixin, ListView):
         context['all_employees'] = all_employees
         return context
 
-class AdminEmployeesList(TopManagerPermisoMixin, ListView):
 
+class AdminEmployeesList(TopManagerPermisoMixin, ListView):
 
     template_name = "users/admin_all_employees.html"
     model = User
@@ -175,13 +171,12 @@ class AdminEmployeesList(TopManagerPermisoMixin, ListView):
                 employee.is_manager = "NIE"
             else:
                 employee.is_manager = "TAK"
-
         
         context['employees'] = employees
         return context
 
-class EmpleadoUpdateView(TopManagerPermisoMixin, UpdateView):
 
+class EmpleadoUpdateView(TopManagerPermisoMixin, UpdateView):
 
     model = User
     template_name = "users/update_employee.html"
@@ -194,8 +189,9 @@ class EmpleadoUpdateView(TopManagerPermisoMixin, UpdateView):
     success_url = reverse_lazy('users_app:admin-all-employees')
 
 
-def delete_employee(request,pk):
 
+@login_required(login_url='users_app:user-login')
+def delete_employee(request,pk):
     employee_to_delete = User.objects.get(id=pk).delete()
     return HttpResponseRedirect(reverse('users_app:admin-all-employees'))
 
