@@ -98,23 +98,29 @@ class LogoutView(View):
 @login_required(login_url='users_app:user-login')
 def update_password(request):
     form = UpdatePasswordForm()
+    person = request.user
     if request.method == 'POST':
         form = UpdatePasswordForm(request.POST)
         new_password = request.POST['password2']
-        if request.POST['password3'] != new_password:
-            messages.error(request, 'Niepoprawnie powtórzono nowe hasło.')
-            print("not changed ====")
-        else:
-            user=request.user
-            user.set_password(new_password)
-            user.save()
-            print("==========changed")
-            logout(request)
-            return HttpResponseRedirect(
-                reverse(
-                    'users_app:user-login'
+        user = authenticate(
+            username=person.username,
+            password=request.POST['password1']
+        )
+        if user:
+            if request.POST['password3'] != new_password:
+                messages.error(request, 'Niepoprawnie powtórzono nowe hasło.')
+            else:
+                user=request.user
+                user.set_password(new_password)
+                user.save()
+                logout(request)
+                return HttpResponseRedirect(
+                    reverse(
+                        'users_app:user-login'
+                    )
                 )
-            )
+        else:
+            messages.error(request, 'Niepoprawnie podano dotychczasowe hasło.')
     return render(request, 'users/update_password.html', {'form':form})
 
 
@@ -176,7 +182,7 @@ class AdminEmployeesList(TopManagerPermisoMixin, ListView):
         return context
 
 
-class EmpleadoUpdateView(TopManagerPermisoMixin, UpdateView):
+class EmployeeUpdateView(TopManagerPermisoMixin, UpdateView):
 
     model = User
     template_name = "users/update_employee.html"

@@ -12,5 +12,5 @@ urlpatterns = [
     path('all-employees/', views.AllEmployeesList.as_view(), name='all-employees'),
     path('admin-all-employees/', views.AdminEmployeesList.as_view(), name='admin-all-employees'),
     path('employee-delete/<int:pk>/', views.delete_employee, name='delete_employee'),
-    path('employee-update/<int:pk>/', views.EmpleadoUpdateView.as_view(), name='update_employee'),
+    path('employee-update/<int:pk>/', views.EmployeeUpdateView.as_view(), name='update_employee'),
 ]
