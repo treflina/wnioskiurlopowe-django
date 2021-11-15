@@ -194,6 +194,10 @@ class EmployeeUpdateView(TopManagerPermisoMixin, UpdateView):
 
     success_url = reverse_lazy('users_app:admin-all-employees')
 
+    def get_context_data(self, **kwargs):
+        context = super(EmployeeUpdateView, self).get_context_data(**kwargs)
+        context['form'].fields['manager'].queryset = User.objects.filter(~Q(role="P")&Q(is_active=True)).order_by('last_name')
+        return context
 
 
 @login_required(login_url='users_app:user-login')
