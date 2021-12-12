@@ -1,6 +1,0 @@
-wnioski/secret.json
-secret.json
-#
-wnioski/applications/users/migrations/*
-wnioski/applications/requests/migrations/*
-wnioski/applications/sickleaves/migrations/*
